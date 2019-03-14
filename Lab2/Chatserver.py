@@ -10,7 +10,7 @@ def main(argv):
 	if len(argv) == 2:
 		port = int(argv[1])
 	else:
-		port = 32342
+		port = 32343
 
 	# create socket and bind
 	sockfd = socket.socket()
@@ -66,12 +66,28 @@ def main(argv):
 				# except the sender
 				# if broken connection, remove that socket from READ
 				# and WRITE lists
-
-
-
+				else:
+					rmsg = sd.recv(500)
+					if rmsg == b'' or not rmsg:
+						print("Connection is broken", sd.getpeername())
+						WList.remove(sd)
+						RList.remove(sd)
+					elif rmsg:
+						print("Got a message!!", rmsg)
+						if len(WList) > 1:
+							print("Relay it to others.")
+							for p in WList:
+								if p != sd:
+									p.send(rmsg)
+					# else:
+					# 	print("A client connection is broken!!")
+					# 	WList.remove(sd)
+					# 	RList.remove(sd)
 
 		# else did not have activity for 10 seconds,
 		# just print out "Idling"
+		else:
+			print("Idling")
 
 
 
